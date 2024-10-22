@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { LightBulbIcon } from "@heroicons/react/24/outline";
+import { LightBulbIcon } from "@heroicons/react/24/solid";
 
 const Dashboard: React.FC = () => {
   // State to track the active tab and light colors
@@ -16,8 +16,10 @@ const Dashboard: React.FC = () => {
   // Function to handle color selection
   const handleColorSelect = (color: string) => {
     if (activeTab === 'livingRoom') {
+      setLivingRoomColor(null);
       setLivingRoomColor(color);
     } else {
+      setBedroomColor(null);
       setBedroomColor(color);
     }
   };
@@ -33,6 +35,21 @@ const Dashboard: React.FC = () => {
 
   const selectedColor = activeTab === 'livingRoom' ? livingRoomColor : bedroomColor;
   const isLightOn = selectedColor !== null; // Light is on if a color is selected
+
+  const getColorClass = (color: string | null) => {
+    switch (color) {
+      case 'red':
+        return 'text-red-500';
+      case 'green':
+        return 'text-green-500';
+      case 'blue':
+        return 'text-blue-500';
+      case 'white':
+        return 'text-gray-300';
+      default:
+        return 'text-gray-500'; // Default to gray for unselected colors
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
@@ -70,11 +87,7 @@ const Dashboard: React.FC = () => {
               title={color.charAt(0).toUpperCase() + color.slice(1)} // Tooltip for color
             >
               <LightBulbIcon
-                className={`w-12 h-12 ${
-                  selectedColor === color
-                    ? `text-${color}-500`
-                    : 'text-gray-500'
-                }`}
+                className={`w-12 h-12 ${getColorClass(selectedColor === color ? color : null)}`}
               />
               <span className={`${selectedColor === color ? ` text-${color}-500` : 'text-white'}`}>{color.toUpperCase()}</span>
             </button>
