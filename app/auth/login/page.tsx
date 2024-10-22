@@ -16,7 +16,7 @@ const LoginPage = () => {
     setError(null);
 
     // Simulated login logic; replace with your authentication API call
-    if (email === 'user@example.com' && password === 'password') {
+    if (email === 'test@gmail.com' && password === 'test123') {
       // Redirect to dashboard or home page
       login(email);
       router.push('/'); // Change this to your desired route
