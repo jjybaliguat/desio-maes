@@ -1,12 +1,14 @@
 "use client"
 import React, { useState } from 'react';
 import { LightBulbIcon } from "@heroicons/react/24/solid";
+import { useAuth } from './context/AuthContext';
 
 const Dashboard: React.FC = () => {
   // State to track the active tab and light colors
   const [activeTab, setActiveTab] = useState<'livingRoom' | 'bedroom'>('livingRoom');
   const [livingRoomColor, setLivingRoomColor] = useState<string | null>(null);
   const [bedroomColor, setBedroomColor] = useState<string | null>(null);
+  const {logout} = useAuth()
 
   // Function to handle tab changes
   const handleTabChange = (tab: 'livingRoom' | 'bedroom') => {
@@ -115,12 +117,18 @@ const Dashboard: React.FC = () => {
         {/* Turn Off Button */}
         {isLightOn && (
           <button
-            className="mt-4 px-4 py-2 rounded bg-red-500"
+            className="mt-4 px-4 py-2 rounded bg-gray-600"
             onClick={turnOffLight}
           >
             Turn Off
           </button>
         )}
+        <button
+          className="mt-4 px-4 py-2 rounded bg-red-500"
+          onClick={()=>logout()}
+        >
+          Sign Out
+        </button>
       </div>
     </div>
   );

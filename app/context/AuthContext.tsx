@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { setCookie } from 'cookies-next';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -11,9 +12,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const router = useRouter()
 
   useEffect(() => {
-    // Check local storage for saved login state
     const savedAuthState = localStorage.getItem('isAuthenticated');
     if (savedAuthState) {
       setIsAuthenticated(JSON.parse(savedAuthState));
@@ -31,6 +32,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('isAuthenticated');
+    deleteCookie('isAuthenticated');
+    router.push("/auth/login")
   };
 
   return (
