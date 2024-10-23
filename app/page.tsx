@@ -55,7 +55,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
-      <h1 className="text-3xl font-bold mb-6">Smart Light Control</h1>
+      <h1 className="text-3xl font-bold mb-6">SmartColor</h1>
 
       {/* Tab Switch */}
       <div className="flex space-x-4 mb-6">
