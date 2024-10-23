@@ -1,7 +1,9 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LightBulbIcon } from "@heroicons/react/24/solid";
 import { useAuth } from './context/AuthContext';
+import { database, onValue, ref } from './utils/firebase';
+import { set, update } from 'firebase/database';
 
 const Dashboard: React.FC = () => {
   // State to track the active tab and light colors
@@ -14,6 +16,42 @@ const Dashboard: React.FC = () => {
   const handleTabChange = (tab: 'livingRoom' | 'bedroom') => {
     setActiveTab(tab);
   };
+  
+  const livingRef = ref(database, 'smartColor/living');
+  const bedroomRef = ref(database, 'smartColor/bedroom');
+
+  useEffect(()=>{
+    onValue(livingRef, (snapshot: { val: () => any; }) => {
+      const data = snapshot.val();
+      if(!data.isOn){
+        setLivingRoomColor(null)
+      }else{
+        setLivingRoomColor(data.color)
+      }
+    });
+    onValue(bedroomRef, (snapshot: { val: () => any; }) => {
+      const data = snapshot.val();
+      if(!data.isOn){
+        setBedroomColor(null)
+      }else{
+        setBedroomColor(data.color)
+      }
+    });
+  }, [])
+
+  function changeColor(color: string) {
+    if(activeTab === 'livingRoom'){
+      update(livingRef, {
+        color,
+        isOn: true
+      })
+    }else{
+      update(bedroomRef, {
+        color,
+        isOn: true
+      })
+    }
+  }
 
   // Function to handle color selection
   const handleColorSelect = (color: string) => {
@@ -28,10 +66,14 @@ const Dashboard: React.FC = () => {
 
   // Function to handle light status (turn off)
   const turnOffLight = () => {
-    if (activeTab === 'livingRoom') {
-      setLivingRoomColor(null); // No color means the light is off
-    } else {
-      setBedroomColor(null);
+    if(activeTab === 'livingRoom'){
+      update(livingRef, {
+        isOn: false
+      })
+    }else{
+      update(bedroomRef, {
+        isOn: false
+      })
     }
   };
 
@@ -85,7 +127,7 @@ const Dashboard: React.FC = () => {
             <button
               key={color}
               className="hover:opacity-75 flex flex-col gap-2 items-center"
-              onClick={() => handleColorSelect(color)}
+              onClick={() => changeColor(color)}
               title={color.charAt(0).toUpperCase() + color.slice(1)} // Tooltip for color
             >
               <LightBulbIcon
