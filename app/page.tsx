@@ -21,7 +21,7 @@ const Dashboard: React.FC = () => {
   const bedroomRef = ref(database, 'smartColor/bedroom');
 
   useEffect(()=>{
-    onValue(livingRef, (snapshot: { val: () => any; }) => {
+    onValue(livingRef, (snapshot) => {
       const data = snapshot.val();
       if(!data.isOn){
         setLivingRoomColor(null)
@@ -29,7 +29,7 @@ const Dashboard: React.FC = () => {
         setLivingRoomColor(data.color)
       }
     });
-    onValue(bedroomRef, (snapshot: { val: () => any; }) => {
+    onValue(bedroomRef, (snapshot) => {
       const data = snapshot.val();
       if(!data.isOn){
         setBedroomColor(null)
