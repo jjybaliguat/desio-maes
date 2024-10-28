@@ -48,9 +48,11 @@ const Dashboard: React.FC = () => {
   function changeColor(color: string) {
     if(activeTab === 'livingRoom'){
       set(livingRef, color)
+      setLivingRoomColor(color)
       set(livingSwitchRef, true)
     }else{
       set(bedroomRef, color)
+      setBedroomColor(color)
       set(bedroomSwitchRef, true)
     }
   }
