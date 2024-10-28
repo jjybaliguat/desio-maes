@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { LightBulbIcon } from "@heroicons/react/24/solid";
 import { useAuth } from './context/AuthContext';
 import { database, onValue, ref } from './utils/firebase';
-import { update } from 'firebase/database';
+import { set, update } from 'firebase/database';
 
 const Dashboard: React.FC = () => {
   // State to track the active tab and light colors
@@ -12,57 +12,55 @@ const Dashboard: React.FC = () => {
   const [bedroomColor, setBedroomColor] = useState<string | null>(null);
   const {logout} = useAuth()
 
-  // Function to handle tab changes
+  // Function to handle tab changes 
   const handleTabChange = (tab: 'livingRoom' | 'bedroom') => {
     setActiveTab(tab);
   };
   
-  const livingRef = ref(database, 'smartColor/living');
-  const bedroomRef = ref(database, 'smartColor/bedroom');
+  const livingRef = ref(database, 'smartColor/livingLedColor');
+  const bedroomRef = ref(database, 'smartColor/bedroomLedColor');
+  const livingSwitchRef = ref(database, 'smartColor/isOnLiving');
+  const bedroomSwitchRef = ref(database, 'smartColor/isOnBedroom');
 
   useEffect(()=>{
-    onValue(livingRef, (snapshot) => {
-      const data = snapshot.val();
-      if(!data.isOn){
+    onValue(livingSwitchRef, (snapshot) => {
+      const isOn = snapshot.val();
+      if(!isOn){
         setLivingRoomColor(null)
-      }else{
-        setLivingRoomColor(data.color)
       }
     });
-    onValue(bedroomRef, (snapshot) => {
-      const data = snapshot.val();
-      if(!data.isOn){
+    onValue(bedroomSwitchRef, (snapshot) => {
+      const isOn = snapshot.val();
+      if(!isOn){
         setBedroomColor(null)
-      }else{
-        setBedroomColor(data.color)
       }
+    });
+    onValue(livingRef, (snapshot) => {
+      const color = snapshot.val();
+      setLivingRoomColor(color)
+    });
+    onValue(bedroomRef, (snapshot) => {
+      const color = snapshot.val();
+        setBedroomColor(color)
     });
   }, [])
 
   function changeColor(color: string) {
     if(activeTab === 'livingRoom'){
-      update(livingRef, {
-        color,
-        isOn: true
-      })
+      set(livingRef, color)
+      set(livingSwitchRef, true)
     }else{
-      update(bedroomRef, {
-        color,
-        isOn: true
-      })
+      set(bedroomRef, color)
+      set(bedroomSwitchRef, true)
     }
   }
 
   // Function to handle light status (turn off)
   const turnOffLight = () => {
     if(activeTab === 'livingRoom'){
-      update(livingRef, {
-        isOn: false
-      })
+      set(livingSwitchRef, false)
     }else{
-      update(bedroomRef, {
-        isOn: false
-      })
+      set(bedroomSwitchRef, false)
     }
   };
 
@@ -112,7 +110,7 @@ const Dashboard: React.FC = () => {
 
         {/* Color Selection */}
         <div className="flex space-x-4 mb-4">
-          {['white', 'red', 'green', 'blue'].map((color) => (
+          {['red', 'green', 'blue'].map((color) => (
             <button
               key={color}
               className="hover:opacity-75 flex flex-col gap-2 items-center"
@@ -133,11 +131,7 @@ const Dashboard: React.FC = () => {
           <span className="inline-block w-10 h-10">
             {isLightOn ? (
               <LightBulbIcon
-                className={`w-10 h-10 ${
-                  selectedColor === 'white'
-                    ? 'text-gray-300'
-                    : `text-${selectedColor}-500`
-                }`}
+                className={`w-10 h-10 ${`text-${selectedColor}-500`}`}
               />
             ) : (
               <LightBulbIcon className="w-10 h-10 text-gray-600" />
