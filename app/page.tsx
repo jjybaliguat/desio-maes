@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { LightBulbIcon } from "@heroicons/react/24/solid";
 import { useAuth } from './context/AuthContext';
 import { database, onValue, ref } from './utils/firebase';
-import { set, update } from 'firebase/database';
+import { set } from 'firebase/database';
 
 const Dashboard: React.FC = () => {
   // State to track the active tab and light colors
